@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'services/api_client.dart';
+import 'services/api_client.dart';   // make sure path is correct
 
 void main() {
   runApp(const MyApp());
@@ -10,20 +10,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Frontend1 Demo', home: CounterPage());
+    return MaterialApp(
+      title: 'Frontend2 – Persistent Counter',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const CounterPage(),
+    );
   }
 }
 
 class CounterPage extends StatefulWidget {
+  const CounterPage({super.key});
+
   @override
-  _CounterPageState createState() => _CounterPageState();
+  State<CounterPage> createState() => _CounterPageState();
 }
 
 class _CounterPageState extends State<CounterPage> {
   final api = ApiClient();
-  int _counter = 0;
+  int? _counter;       // null = not yet loaded
+  String? _error;      // store error messages
   bool _loading = true;
-  String? _error;
 
   @override
   void initState() {
@@ -32,6 +38,10 @@ class _CounterPageState extends State<CounterPage> {
   }
 
   Future<void> _loadCounter() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final value = await api.getCounter();
       setState(() {
@@ -61,16 +71,37 @@ class _CounterPageState extends State<CounterPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     if (_error != null) {
-      return Scaffold(body: Center(child: Text("Error: $_error")));
+      return Scaffold(
+        appBar: AppBar(title: const Text("Counter API Demo")),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("⚠️ Backend unavailable",
+                  style: const TextStyle(fontSize: 20, color: Colors.red)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadCounter, // retry loading
+                child: const Text("Retry"),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     return Scaffold(
       appBar: AppBar(title: const Text("Counter API Demo")),
       body: Center(
-        child: Text("Counter: $_counter", style: const TextStyle(fontSize: 24)),
+        child: Text("Counter: $_counter",
+            style: const TextStyle(fontSize: 24)),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,

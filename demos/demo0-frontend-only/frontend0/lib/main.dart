@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 void main() {
+  // Entry point of the app. runApp starts the Flutter framework and
+  // displays the given widget on the screen.
   runApp(const CounterApp());
 }
 
+// A simple app that shows a counter and a button to increment it.
 class CounterApp extends StatelessWidget {
   const CounterApp({super.key});
 
@@ -12,11 +15,12 @@ class CounterApp extends StatelessWidget {
     return MaterialApp(
       title: 'Demo 0 – Counter',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const CounterPage(),
+      home: const CounterPage(), // The main screen of the app.
     );
   }
 }
 
+// A screen that can update when its internal state changes.
 class CounterPage extends StatefulWidget {
   const CounterPage({super.key});
 

@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
-
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 var db *pgx.Conn // global DB connection
@@ -19,7 +18,7 @@ type CounterResponse struct {
 }
 
 func main() {
-	// Connection string (update YOURPASSWORD to your postgres password!)
+	// Load env
 	godotenv.Load("../../../.env")
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
@@ -27,7 +26,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Connect to database
+	// Connect to Postgres
 	var err error
 	db, err = pgx.Connect(context.Background(), dbURL)
 	if err != nil {
@@ -37,7 +36,7 @@ func main() {
 	defer db.Close(context.Background())
 	fmt.Println("✅ Connected to Postgres")
 
-	// Ensure there’s always one row in counters
+	// Ensure there’s at least one row in counters
 	_, err = db.Exec(context.Background(),
 		`INSERT INTO counters (id, value) VALUES (1, 0)
 		 ON CONFLICT (id) DO NOTHING;`)
@@ -55,7 +54,7 @@ func main() {
 		err := db.QueryRow(context.Background(),
 			"SELECT value FROM counters WHERE id=1").Scan(&value)
 		if err != nil {
-			http.Error(w, "DB query failed", http.StatusInternalServerError)
+			http.Error(w, "DB query failed: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -68,14 +67,14 @@ func main() {
 		err := db.QueryRow(context.Background(),
 			"UPDATE counters SET value = value + 1 WHERE id=1 RETURNING value").Scan(&value)
 		if err != nil {
-			http.Error(w, "DB update failed", http.StatusInternalServerError)
+			http.Error(w, "DB update failed: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(CounterResponse{Value: value})
 	})
 
-	// Port from env or default
+	// Port
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
