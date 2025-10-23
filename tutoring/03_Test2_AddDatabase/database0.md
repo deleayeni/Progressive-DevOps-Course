@@ -1,5 +1,10 @@
 # 🗄️ Database 0 — Postgres Setup
 
+## 🚀 Navigation
+
+- **[← Test 2 Overview](./_overview.md)** — Back to Test 2 introduction
+- **[→ Backend 2 Tutorial](./backend2.md)** — Next: Backend database integration
+
 ## ⛓️ Prerequisites
 
 Before starting, ensure **Docker** is installed and running (`docker0`).

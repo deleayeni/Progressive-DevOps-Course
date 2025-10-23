@@ -15,26 +15,11 @@ Create a Flutter application that:
 3. Increments the counter each time the button is pressed.
 4. Resets the counter to **0** when the app restarts (no persistence yet).
 
-## ⚙️ Steps to Implement
+## 🧠 What to Do
 
-1. **Create a new Flutter project**
-
-   ```bash
-   flutter create frontend0
-   cd frontend0
-   ```
-
-2. **Open and edit the main file**
-
-   - Navigate to `lib/main.dart`
-   - Rename the app title to "Frontend 0 – Counter App"
-   - Keep or modify the default counter logic using `setState()` inside a `StatefulWidget`
-
-3. **Run the app**
-   ```bash
-   flutter run -d chrome
-   ```
-   or use an Android/iOS emulator
+1. **Create a new Flutter project** and modify the default counter app
+2. **Customize the UI** to show "Frontend 0 – Counter App" as the title
+3. **Test the app** to ensure the counter increments and resets on restart
 
 ## ✅ What "Done" Looks Like
 
@@ -50,6 +35,13 @@ Create a Flutter application that:
 - Button increments the counter correctly
 - Counter resets on restart (expected)
 - Hot reload works smoothly
+
+## 📚 Detailed Instructions
+
+For step-by-step guidance, see the tutoring materials:
+
+- **[Test 0 Overview](../../tutoring/01_Test0_FrontendOnly/_overview.md)** — Course introduction and concepts
+- **[Frontend 0 Tutorial](../../tutoring/01_Test0_FrontendOnly/frontend0.md)** — Flutter app development
 
 ## 🚀 Next Step
 

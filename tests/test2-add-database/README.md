@@ -1,70 +1,44 @@
-# Composed Demo 2 — Add Database
+# 🗄️ Test 2 — Add Database
 
-## 🎯 Learning Goal
+## 🎯 Objective
 
-- Persist state so backend restarts don’t lose data.
-- Understand database connections, schemas, and migrations.
-- Learn how to read and write from a Postgres database in the backend.
+Add **Postgres database persistence** to the counter application so that data survives backend restarts.  
+This test introduces database connectivity and moves from in-memory storage to durable disk-based storage.
 
----
+## 📦 Modules
 
-## ⚠️ Problem / Issue
+- `database0/` — Postgres setup running in Docker, schema creation
+- `backend2/` — Go backend connects to Postgres to store/retrieve counter
+- `frontend1/` — Unchanged Flutter UI calling backend APIs
 
-- In Demo 1, the counter survived UI restarts but **reset if the backend restarted**.
-- The backend stored the counter **in memory only**.
-- We need to persist the state in a **Postgres database**, so it is durable across server restarts.
+## 🧠 What to Do
 
----
+1. **Database**: Set up Postgres in Docker and create the `counters` table
+2. **Backend**: Connect the Go server to Postgres instead of using in-memory storage
+3. **Frontend**: No changes needed — still calls the same API endpoints
 
-## 🔧 Step-by-Step Instructions
+## ✅ What "Done" Looks Like
 
-### Database1 (Postgres setup)
+- ✅ Postgres database runs in Docker with persistent volume
+- ✅ Backend connects to database and reads/writes counter values
+- ✅ Counter survives both UI and backend restarts
+- ✅ Frontend works unchanged (same API endpoints)
 
-1. Install PostgreSQL locally or run it via Docker.
-2. Create a database called `demo`.
-3. Inside it, create a table `counters` with fields like `id` (primary key) and `value` (the counter).
-4. Test the database connection with a simple query:
-   - `SELECT * FROM counters;`
+## 🧪 Verification
 
-### Backend2 (Go server with Postgres)
+- Database container is running: `docker ps`
+- Backend responds to health check: `curl http://localhost:8080/healthz`
+- Counter API works: `curl http://localhost:8080/counter`
+- **Persistence test**: Restart backend, counter value should remain
 
-1. Extend your backend to connect to Postgres using a database driver (e.g., pgx).
-2. Move the counter logic into the database:
-   - `GET /counter` → reads the current counter value from the `counters` table.
-   - `POST /counter/increment` → updates the table and returns the new value.
-3. Use an environment variable (`DATABASE_URL`) for your connection string instead of hardcoding credentials.
-   - Example: store it in a `.env` file and load it at runtime.
-4. Test that the backend still responds correctly after server restarts — the counter should continue from the last saved value.
+## 📚 Detailed Instructions
 
-### Frontend2 (Flutter client)
+For step-by-step guidance, see the tutoring materials:
 
-1. No major changes in the frontend code.
-2. It still calls the same endpoints (`/counter` and `/counter/increment`).
-3. The difference is **what happens behind the scenes**: now the backend queries the database instead of in-memory data.
+- **[Test 2 Overview](../../tutoring/03_Test2_AddDatabase/_overview.md)** — Course introduction and concepts
+- **[Database 0 Tutorial](../../tutoring/03_Test2_AddDatabase/database0.md)** — Postgres setup
+- **[Backend 2 Tutorial](../../tutoring/03_Test2_AddDatabase/backend2.md)** — Backend database integration
 
----
+## 🚀 Next Step
 
-## 📖 Concepts Introduced
-
-- **Database persistence**: state is stored on disk in a database, surviving server restarts.
-- **Postgres basics**: database, schema, and tables.
-- **Environment variables**: safe way to handle credentials and database URLs.
-- **Migrations**: SQL commands to create or update database schema.
-- **Durability**: backend restarts no longer reset the counter.
-
----
-
-## 🪞 Reflection
-
-- ✅ Counter survives both UI and backend restarts.
-- ✅ Learned to connect backend to an external database.
-- ❌ Currently, only one counter exists; scaling to multiple users would require schema changes.
-- 🔜 Next: expand into DevOps practices like CI/CD pipelines and monitoring.
-
----
-
-## ✅ Outcome
-
-- Database runs locally and stores the counter state.
-- Backend reads/writes to Postgres instead of memory.
-- Frontend interacts with the backend in the same way, but data is now **persistent**.
+Once the database-backed counter works correctly, proceed to **Test 3 — Containerize Application** to package everything into Docker containers for consistent deployment.

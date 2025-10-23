@@ -1,5 +1,9 @@
 # 🧩 Test 2 — Add Database
 
+## 🚀 Ready to Start?
+
+**[Go to Test 2 Implementation](../../tests/test2-add-database/README.md)**
+
 ## 🧠 Overview
 
 In **Test 1**, the backend stored the counter in memory.  
@@ -31,6 +35,11 @@ This marks the transition from _volatile_ to _durable_ state and lays the founda
 - Backend–database connectivity and environment variables.
 - The idea of “stateful services” in DevOps.
 
+## 📚 Detailed Modules
+
+- **[Database 0 Tutorial](./database0.md)** — Postgres setup and schema creation
+- **[Backend 2 Tutorial](./backend2.md)** — Backend database integration
+
 ## 🔜 Next Step
 
-In **Test 3**, you’ll learn to **containerize** both backend and frontend for unified deployment.
+In **Test 3**, you'll learn to **containerize** both backend and frontend for unified deployment.

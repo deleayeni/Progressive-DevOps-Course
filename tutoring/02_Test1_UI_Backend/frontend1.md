@@ -1,5 +1,11 @@
 # 🧩 Frontend 1 — Flutter UI Calls the Backend API
 
+## 🚀 Navigation
+
+- **[← Backend 1 Tutorial](./backend1.md)** — Previous: Counter API implementation
+- **[← Test 1 Overview](./_overview.md)** — Back to Test 1 introduction
+- **[→ Test 2 Overview](../03_Test2_AddDatabase/_overview.md)** — Next: Add database persistence
+
 ## 🎯 Learning Goal
 
 - Replace local counter state with server state.

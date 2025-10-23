@@ -15,17 +15,9 @@ This test introduces client-server communication — the UI will no longer store
 
 ## 🧠 What to Do
 
-1. **Backend:**
-
-   - Start with a minimal Go server (backend0) that responds with `"ok"` on `/healthz`.
-   - Expand it into an API (backend1) that holds a counter in memory.
-   - Expose two endpoints:
-     - `GET /counter` → returns the current counter value.
-     - `POST /counter/increment` → increases the counter and returns the new value.
-
-2. **Frontend:**
-   - Modify the Flutter app so it fetches and updates the counter value from the backend.
-   - The app should display the counter retrieved from the server and update it via HTTP requests.
+1. **Backend**: Build a Go HTTP server with health check and counter API endpoints
+2. **Frontend**: Modify the Flutter app to communicate with the backend via HTTP
+3. **Integration**: Test that the counter persists across frontend restarts
 
 ## ✅ What "Done" Looks Like
 
@@ -41,6 +33,15 @@ This test introduces client-server communication — the UI will no longer store
 - You can access all endpoints locally (`http://localhost:8080`).
 - The frontend correctly reflects updates from the backend.
 - No local UI-only state is left in the app.
+
+## 📚 Detailed Instructions
+
+For step-by-step guidance, see the tutoring materials:
+
+- **[Test 1 Overview](../../tutoring/02_Test1_UI_Backend/_overview.md)** — Course introduction and concepts
+- **[Backend 0 Tutorial](../../tutoring/02_Test1_UI_Backend/backend0.md)** — Minimal Go server
+- **[Backend 1 Tutorial](../../tutoring/02_Test1_UI_Backend/backend1.md)** — Counter API implementation
+- **[Frontend 1 Tutorial](../../tutoring/02_Test1_UI_Backend/frontend1.md)** — Flutter HTTP integration
 
 ## 🚀 Next Step
 

@@ -1,5 +1,11 @@
 # 🧩 Backend 1 — In-Memory Counter API
 
+## 🚀 Navigation
+
+- **[← Backend 0 Tutorial](./backend0.md)** — Previous: Minimal Go server
+- **[→ Frontend 1 Tutorial](./frontend1.md)** — Next: Flutter HTTP integration
+- **[← Test 1 Overview](./_overview.md)** — Back to Test 1 introduction
+
 ## 🎯 Learning Goal
 
 - Build a Go backend that stores application state (counter) in memory.

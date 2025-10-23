@@ -1,5 +1,9 @@
 # 🧩 Test 4 — CI Pipeline (Build + Test + Push Artifact)
 
+## 🚀 Ready to Start?
+
+**[Go to Test 4 Implementation](../../tests/test4-ci-pipeline/README.md)**
+
 ## 🧠 Overview
 
 By Test 3, your app runs consistently in Docker — but you still build and test everything manually.  
@@ -35,6 +39,11 @@ This step transforms your project from a local prototype into a collaborative, p
 - Build/test stages and artifacts.
 - Source control collaboration (PR templates, required checks).
 - Container registries and artifact storage.
+
+## 📚 Detailed Modules
+
+- **[CI 0 Tutorial](./ci0.md)** — Pipeline setup and configuration
+- **[Collab 0 Tutorial](./collab0.md)** — Collaboration and branch protection
 
 ## 🔍 Reflection
 

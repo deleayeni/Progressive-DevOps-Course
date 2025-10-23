@@ -1,5 +1,9 @@
 # 🧩 Test 1 — UI + Backend
 
+## 🚀 Ready to Start?
+
+**[Go to Test 1 Implementation](../../tests/test1-ui-backend/README.md)**
+
 ## 🧠 Overview
 
 In **Test 0**, our Flutter app stored all state in memory.  
@@ -35,6 +39,12 @@ This separation is the foundation of scalable, maintainable software — and an 
 - JSON serialization
 - Health checks and service reliability
 
+## 📚 Detailed Modules
+
+- **[Backend 0 Tutorial](./backend0.md)** — Minimal Go HTTP server
+- **[Backend 1 Tutorial](./backend1.md)** — Counter API implementation
+- **[Frontend 1 Tutorial](./frontend1.md)** — Flutter HTTP integration
+
 ## 🔜 Next Step
 
-In **Test 2**, we’ll introduce **Postgres** to persist state across backend restarts.
+In **Test 2**, we'll introduce **Postgres** to persist state across backend restarts.

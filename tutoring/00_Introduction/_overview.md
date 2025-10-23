@@ -3,8 +3,6 @@
 Welcome to the **From Fullstack to DevOps** learning repository.  
 This project is both a _hands-on technical journey_ and a _teaching framework_ that grows step by step from a simple frontend app to a full DevOps ecosystem.
 
----
-
 ## 🧱 Project Overview
 
 This repository is divided into two main parts, each serving a different purpose:
@@ -19,8 +17,6 @@ This repository is divided into two main parts, each serving a different purpose
   - Example solutions for reference.
 - Think of `/tests` as your **lab environment** — where you build, run, and break things to learn.
 
----
-
 ### 2. `/tutoring` — In-Depth Explanations and Lessons
 
 - The `/tutoring` folder contains detailed **learning materials** for each Test.
@@ -31,8 +27,6 @@ This repository is divided into two main parts, each serving a different purpose
   - Optional quizzes or review questions to test understanding.
 - Think of `/tutoring` as your **textbook and instructor notes** — it explains not just _how_, but _why_.
 
----
-
 ## 🔍 How to Use This Repository
 
 | Goal                                          | Where to Start                                      | What to Expect                                    |
@@ -40,8 +34,6 @@ This repository is divided into two main parts, each serving a different purpose
 | You want to **run the project**               | Go to `/tests` and open the Test README             | Short, practical steps with code                  |
 | You want to **understand the concepts**       | Go to `/tutoring` and read the matching Test folder | Deep explanations and exercises                   |
 | You want to **contribute or improve lessons** | Work directly inside `/tutoring` using Cursor       | The Markdown files are meant for AI-aided editing |
-
----
 
 ## 🧩 Learning Flow
 
@@ -56,8 +48,6 @@ The learning path is sequential:
 
 Each stage adds one DevOps layer — frontend → backend → database → containers → pipelines → infrastructure.
 
----
-
 ## 💡 Why Two Layers?
 
 By separating runnable code (`/tests`) from educational notes (`/tutoring`):
@@ -65,8 +55,6 @@ By separating runnable code (`/tests`) from educational notes (`/tutoring`):
 - Developers can **focus on execution** without being overwhelmed by explanations.
 - Teachers (or Cursor AI) can **iterate and improve** the lessons independently.
 - The repo stays clean, modular, and scalable as the course grows.
-
----
 
 ## ✅ Final Note
 

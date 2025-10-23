@@ -1,5 +1,9 @@
 # ☸️ Test 5 — Kubernetes (kind) Minimal Deploy
 
+## 🚀 Ready to Start?
+
+**[Go to Test 5 Implementation](../../tests/test5-kubernetes-deploy/README.md)**
+
 ## 🧠 Overview
 
 Up to now, everything runs locally with Docker Compose.  
@@ -32,6 +36,11 @@ You’ll deploy the backend and database onto a local cluster (kind or Minikube)
 - Declarative configuration and self-healing.
 - ConfigMaps and Secrets for environment configuration.
 - Helm or Kustomize for templated manifests.
+
+## 📚 Detailed Modules
+
+- **[K8s 0 Tutorial](./k8s0.md)** — Kubernetes cluster setup and basic deployment
+- **[K8s 1 Tutorial](./k8s1.md)** — Advanced Kubernetes configuration
 
 ## 🔍 Reflection
 

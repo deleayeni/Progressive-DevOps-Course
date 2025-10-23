@@ -1,5 +1,9 @@
 # ☁️ Test 7 — Cloud-Ready Stub (Optional)
 
+## 🚀 Ready to Start?
+
+**[Go to Test 7 Implementation](../../tests/test7-cloud-ready/README.md)**
+
 ## 🧠 Overview
 
 The final step of this series bridges local Kubernetes setups with real cloud environments.  
@@ -31,6 +35,11 @@ It shows what changes when moving from “local dev” to “cloud prod.”
 - External dependencies (cloud databases, secrets).
 - Helm value overrides and parameterization.
 - Infrastructure as code for multi-environment pipelines.
+
+## 📚 Detailed Modules
+
+- **[Cloud 0 Tutorial](./cloud0.md)** — Environment configuration and secrets management
+- **[Cloud 1 Tutorial](./cloud1.md)** — Production-ready deployment patterns
 
 ## 🔍 Reflection
 

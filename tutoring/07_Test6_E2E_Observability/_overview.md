@@ -1,5 +1,9 @@
 # 🧪 Test 6 — E2E + Basic Observability
 
+## 🚀 Ready to Start?
+
+**[Go to Test 6 Implementation](../../tests/test6-e2e-observability/README.md)**
+
 ## 🧠 Overview
 
 Your app now runs in Kubernetes, but reliability isn’t just about uptime — it’s about knowing when things break.  
@@ -33,6 +37,11 @@ You’ll learn how to validate real user paths and capture system behavior durin
 - Observability pillars: logs, metrics, traces.
 - Log inspection (`kubectl logs`), metric scraping basics.
 - Git hooks for pre-commit or pre-push checks.
+
+## 📚 Detailed Modules
+
+- **[E2E 0 Tutorial](./e2e0.md)** — End-to-end testing setup
+- **[Obs 0 Tutorial](./obs0.md)** — Basic observability and monitoring
 
 ## 🔍 Reflection
 

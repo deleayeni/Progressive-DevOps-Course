@@ -1,5 +1,9 @@
 # 🧩 Test 3 — Containerize Application
 
+## 🚀 Ready to Start?
+
+**[Go to Test 3 Implementation](../../tests/test3-containerize-application/README.md)**
+
 ## 🧠 Overview
 
 After Test 2, everything worked but required manual setup.  
@@ -37,6 +41,13 @@ In **Test 3**, we fix this by **containerizing every component** (backend, front
 - Volumes for persistent storage.
 - Container networking.
 - Declarative infrastructure with Docker Compose.
+
+## 📚 Detailed Modules
+
+- **[Docker 1 Tutorial](./docker1.md)** — Backend containerization
+- **[Frontend 2 Tutorial](./frontend2.md)** — Static web build
+- **[Docker 2 Tutorial](./docker2.md)** — Frontend containerization
+- **[Docker 3 Tutorial](./docker3.md)** — Docker Compose orchestration
 
 ## 🔍 Reflection
 
