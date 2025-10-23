@@ -2,14 +2,17 @@
 
 ## 📘 Introduction
 
-This course is designed as a **progressive roadmap** to learn DevOps concepts by building a real project step by step.  
-Instead of starting with abstract theory, we use small, focused demos where each one:
+This course is a **progressive, test-driven roadmap** for learning DevOps by building and evolving a real application step by step.  
+Instead of long theory sessions, each stage focuses on a **practical, working demo** that teaches one DevOps concept at a time.
 
-- Solves one concrete problem.
-- Introduces one or two new concepts.
-- Reveals the next limitation to be addressed.
+Each step:
 
-By the end, you will have touched the full stack: frontend, backend, database, and DevOps practices.
+- Solves a real technical problem.
+- Introduces one or two new DevOps principles or tools.
+- Reveals the next limitation that motivates the following step.
+
+Through this iterative process, you’ll move from a simple Flutter app to a fully containerized, automated, and deployable system.  
+By the end, you’ll have built and understood the complete stack — **frontend, backend, database, pipelines, and Kubernetes** — while learning _why each layer matters_.
 
 ---
 
@@ -23,43 +26,107 @@ By the end, you will have touched the full stack: frontend, backend, database, a
 
 ## 🛠 Teaching Philosophy
 
-- **Demystify, not master**: We focus on clarity and simplicity over depth.
-- **Small bricks**: Each demo is achievable in 1–2 days.
-- **Progressive complexity**: Every demo builds on the last, gradually layering frontend → backend → DB → DevOps.
-- **Reflections**: At the end of each demo, we summarize what was solved and what limitation points toward the next step.
+- **Demystify, not master** — We focus on clarity and practical understanding over deep specialization.
+- **Build in small bricks** — Each test or demo is achievable within 1–2 days and produces a working result.
+- **Progressive complexity** — Every stage builds on the previous one, layering concepts from frontend → backend → database → DevOps pipelines.
+- **Reflect and iterate** — Each step ends with a reflection on what was solved and what limitation leads to the next challenge.
+- **Learn by doing** — The best way to understand DevOps is by building and breaking real systems.
 
 ---
 
 ## 📂 Course Structure
 
-### Composed Demo 0 — Just UI & Simple Backend
+This course is organized into **progressive tests**, each one introducing a new DevOps layer while solving a concrete technical problem.  
+Every test builds on the last — transforming a simple Flutter app into a full, containerized, and automated system.
 
-- **Frontend0**: A Flutter counter app.
-- **Backend0**: A minimal Go HTTP server with a health-check.
-- **Lesson**: Frontend and backend exist separately, but don’t yet talk to each other.
+---
 
-### Composed Demo 1 — UI + Backend
+### 🧩 Test 0 — Just UI
 
-- **Frontend1**: Flutter app calls the backend API.
-- **Backend1**: Go server manages counter state in memory.
-- **Lesson**: State survives UI restarts but resets if the backend restarts.
+- **Frontend0**: A Flutter counter app that runs locally.
+- **Goal**: Understand what a frontend-only application is and where its limits lie.
+- **Problem**: The counter resets every time the app restarts — there’s no persistence.
+- **Concepts Introduced**:
+  - Stateful vs Stateless widgets in Flutter.
+  - Local app state and memory.
+  - Why real-world apps need a backend to store data.
+- **Lesson**: Frontend-only apps are simple but ephemeral; they cannot retain data or handle collaboration.
 
-### Composed Demo 2 — Add Database
+---
 
-- **Database1**: Postgres stores the counter.
-- **Backend2**: Go server connects to Postgres for persistence.
-- **Frontend2**: Still calls the same API, but now data survives backend restarts.
-- **Lesson**: Introduces persistence, environment variables, and database schema basics.
+### 🧩 Test 1 — UI + Backend
+
+- **Frontend1**: The Flutter app now calls a backend API.
+- **Backend1**: A Go server provides a `/counter` API with in-memory state.
+- **Goal**: Introduce the client-server model and basic API communication.
+- **Problem**: State now persists across UI restarts, but resets if the backend restarts.
+- **Concepts Introduced**:
+  - HTTP requests and endpoints (GET, POST).
+  - JSON serialization between frontend and backend.
+  - Running a Go HTTP server locally.
+  - API-driven architecture.
+- **Lesson**: You’ve decoupled logic from the UI — the backend now owns the state, but it still isn’t persistent across process restarts.
+
+---
+
+### 🧩 Test 2 — Add Database
+
+- **Database0**: Run Postgres inside a Docker container.
+- **Backend2**: The Go server now connects to Postgres to persist counter data.
+- **Frontend2**: Still communicates via the same API — no frontend changes required.
+- **Goal**: Introduce data persistence using a relational database.
+- **Problem**: The backend used in-memory storage before; data disappeared when the process stopped. We now need persistent storage across restarts.
+- **Concepts Introduced**:
+  - Postgres setup using Docker (`docker run postgres`).
+  - Basic SQL: CREATE TABLE, INSERT, SELECT.
+  - Connection strings and environment variables.
+  - Volumes for persistent data in Docker.
+- **Lesson**: The backend now persists state in a real database. The app survives restarts — but the setup is still manual and not yet portable.
+
+---
+
+### 🧩 Test 3 — Containerize the Application
+
+- **Goal**: Make the entire stack reproducible and runnable on any machine using Docker.
+- **Problem**: So far, each developer must install Flutter, Go, and Postgres manually — causing inconsistency between environments.
+- **Modules**:
+  - **Docker0 – Backend Image**: Create a simple Dockerfile for the Go backend and run it as a container.
+  - **Frontend2 – Static Build**: Use `flutter build web` to produce static HTML/JS files for deployment.
+  - **Docker2 – Nginx Frontend Image**: Serve the static frontend with Nginx using a custom image.
+  - **Docker3 – Compose Setup**: Define all services (frontend, backend, database) in `docker-compose.yml` for one-command startup.
+- **Concepts Introduced**:
+  - Dockerfiles (FROM, COPY, RUN, CMD).
+  - Container networking and port mapping.
+  - Volumes for database persistence.
+  - Declarative multi-container setups with Docker Compose.
+- **Lesson**: You can now run the entire application — frontend, backend, and database — consistently on any machine using `docker compose up`.  
+  This marks the transition from **local development** to **portable DevOps environments**.
 
 ---
 
 ## 🔮 Future Roadmap
 
-- **Demo 3 — CI/CD Pipelines**  
-  Automate builds, tests, and deployments.
+After mastering the fundamentals through Tests 0–3, the course continues into advanced DevOps automation and operations.
 
-- **Demo 4 — Monitoring & Logging**  
-  Add health checks, metrics, and alerts for real-world reliability.
+### 🧩 Test 4 — CI Pipeline
+
+Automate builds, tests, and artifact publishing using GitHub Actions or Azure Pipelines.  
+Learn to define workflows that build Docker images, run integration tests, and validate code before merging.
+
+### 🧩 Test 5 — Kubernetes Deploy
+
+Deploy the full stack (frontend, backend, database) on a local **kind** cluster.  
+Use Deployments, Services, ConfigMaps, and Secrets to understand how real-world systems scale and recover.
+
+### 🧩 Test 6 — End-to-End Tests & Observability
+
+Run a full user-path test (E2E) using Playwright or curl-based scripts.  
+Add basic observability: structured logs and simple metrics to track requests and diagnose failures.
+
+### 🧩 Test 7 — Cloud-Ready Configuration
+
+Prepare the app for production with templated Helm charts or Kustomize overlays.  
+Add external database configuration, secrets management, and environment-based deployments.
 
 ---
 
@@ -67,10 +134,12 @@ By the end, you will have touched the full stack: frontend, backend, database, a
 
 By completing this course, you will:
 
-- Understand how a Flutter frontend communicates with a Go backend.
-- Learn how to connect a backend to a Postgres database.
-- Gain practical knowledge of APIs, HTTP requests, JSON, and persistence.
-- Be prepared to extend the project into real **DevOps workflows** (CI/CD, monitoring).
+- Understand how each layer of a modern application works — from **frontend UI** to **backend API**, **database**, **containers**, and **deployment**.
+- Learn to **containerize** your systems with Docker and define multi-service environments using Docker Compose.
+- Build confidence in **automation** through continuous integration pipelines that test and validate every change.
+- Deploy and manage your application on **Kubernetes**, gaining insight into scaling, health checks, and self-healing systems.
+- Introduce **observability** by collecting logs and metrics to monitor system behavior.
+- Develop a solid mental model of how real software moves from **development** to **production** — reliably and repeatably.
 
 ---
 
