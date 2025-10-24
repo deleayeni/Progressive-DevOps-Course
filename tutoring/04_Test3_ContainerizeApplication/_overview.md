@@ -4,6 +4,15 @@
 
 **[Go to Test 3 Implementation](../../tests/test3-containerize-application/README.md)**
 
+## ⛓️ Prerequisites
+
+Before starting Test 3, you must complete:
+
+- **Test 2 — Database0** — Postgres must be running in a container
+  - The backend needs to connect to the database
+  - Verify: `docker ps` should show your Postgres container
+- **Test 2 — Docker0** — Docker Desktop must be installed and running
+
 ## 🧠 Overview
 
 After Test 2, everything worked but required manual setup.  

@@ -7,7 +7,7 @@ This test introduces client-server communication — the UI will no longer store
 
 ## 📦 Modules
 
-- `backend0/` — minimal Go HTTP server returning a simple health check (`/healthz` → "ok").
+- `backend0/` — minimal Go HTTP server returning "Hello, world!" at `/`.
 - `backend1/` — Go API that stores a counter in memory and exposes endpoints:
   - `GET /counter`
   - `POST /counter/increment`
@@ -15,13 +15,13 @@ This test introduces client-server communication — the UI will no longer store
 
 ## 🧠 What to Do
 
-1. **Backend**: Build a Go HTTP server with health check and counter API endpoints
+1. **Backend**: Build a Go HTTP server with counter API endpoints
 2. **Frontend**: Modify the Flutter app to communicate with the backend via HTTP
 3. **Integration**: Test that the counter persists across frontend restarts
 
 ## ✅ What "Done" Looks Like
 
-- ✅ The backend responds with `"ok"` at `/healthz`.
+- ✅ The backend responds with `"Hello, world!"` at `/`.
 - ✅ The backend exposes `/counter` and `/counter/increment` endpoints that return valid JSON.
 - ✅ The frontend displays the counter value retrieved from the backend.
 - ✅ Pressing the button increments the backend counter.

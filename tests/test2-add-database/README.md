@@ -27,7 +27,7 @@ This test introduces database connectivity and moves from in-memory storage to d
 ## 🧪 Verification
 
 - Database container is running: `docker ps`
-- Backend responds to health check: `curl http://localhost:8080/healthz`
+- Backend responds to counter endpoint: `curl http://localhost:8080/counter`
 - Counter API works: `curl http://localhost:8080/counter`
 - **Persistence test**: Restart backend, counter value should remain
 
@@ -36,6 +36,7 @@ This test introduces database connectivity and moves from in-memory storage to d
 For step-by-step guidance, see the tutoring materials:
 
 - **[Test 2 Overview](../../tutoring/03_Test2_AddDatabase/_overview.md)** — Course introduction and concepts
+- **[Docker 0 Tutorial](../../tutoring/03_Test2_AddDatabase/docker0.md)** — Install Docker (prerequisite)
 - **[Database 0 Tutorial](../../tutoring/03_Test2_AddDatabase/database0.md)** — Postgres setup
 - **[Backend 2 Tutorial](../../tutoring/03_Test2_AddDatabase/backend2.md)** — Backend database integration
 

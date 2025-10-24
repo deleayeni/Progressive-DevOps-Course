@@ -5,6 +5,15 @@
 **Containerize the entire application stack** (frontend, backend, and database) using Docker and Docker Compose.  
 This test transforms the application from manual setup to a reproducible, one-command deployment that runs identically on any machine.
 
+## ⛓️ Prerequisites
+
+Before starting Test 3, ensure you have completed:
+
+- ✅ **Test 2 — Docker0** — Docker Desktop installed and running
+- ✅ **Test 2 — Database0** — Postgres running in a Docker container
+  - The backend needs to connect to the database
+  - Verify: `docker ps` should show your Postgres container running
+
 ## 📦 Modules
 
 - `docker1/` — Build backend image

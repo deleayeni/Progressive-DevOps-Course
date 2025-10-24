@@ -19,7 +19,7 @@ This separation is the foundation of scalable, maintainable software — and an 
 ## 🎯 Learning Goals
 
 - Understand how a frontend and backend communicate through HTTP.
-- Build a simple Go server that can respond to health checks and data requests.
+- Build a simple Go server that can respond to HTTP requests.
 - Use Flutter to send and receive JSON data through HTTP calls.
 - Observe the trade-off: UI restarts no longer lose data, but backend restarts still do.
 
@@ -27,7 +27,7 @@ This separation is the foundation of scalable, maintainable software — and an 
 
 | Module        | Description                                                               | Outcome                                                |
 | ------------- | ------------------------------------------------------------------------- | ------------------------------------------------------ |
-| **backend0**  | Minimal Go HTTP server exposing `/healthz`.                               | Confirms environment setup and port binding.           |
+| **backend0**  | Minimal Go HTTP server exposing `/` with "Hello, world!".                 | Confirms environment setup and port binding.           |
 | **backend1**  | In-memory counter API using `GET /counter` and `POST /counter/increment`. | Introduces server-managed state and JSON APIs.         |
 | **frontend1** | Flutter app calls the backend for counter data.                           | Connects client and server into one functional system. |
 
@@ -37,7 +37,7 @@ This separation is the foundation of scalable, maintainable software — and an 
 - HTTP endpoints & ports
 - State scope and persistence
 - JSON serialization
-- Health checks and service reliability
+- Basic HTTP server concepts
 
 ## 📚 Detailed Modules
 

@@ -23,6 +23,7 @@ This marks the transition from _volatile_ to _durable_ state and lays the founda
 
 | Module        | Description                                                | Outcome                                |
 | ------------- | ---------------------------------------------------------- | -------------------------------------- |
+| **docker0**   | Install Docker Desktop (prerequisite).                     | Docker is running and ready to use.    |
 | **database0** | Postgres setup running in Docker, schema creation.         | Data persists across restarts.         |
 | **backend2**  | Go backend connects to Postgres to store/retrieve counter. | Counter now survives backend restarts. |
 | **frontend1** | Unchanged Flutter UI calling backend APIs.                 | Displays persistent counter data.      |
@@ -37,7 +38,8 @@ This marks the transition from _volatile_ to _durable_ state and lays the founda
 
 ## 📚 Detailed Modules
 
-- **[Database 0 Tutorial](./database0.md)** — Postgres setup and schema creation
+- **[Docker0 Tutorial](./docker0.md)** — Install Docker (prerequisite)
+- **[Database0 Tutorial](./database0.md)** — Postgres setup and schema creation
 - **[Backend 2 Tutorial](./backend2.md)** — Backend database integration
 
 ## 🔜 Next Step
