@@ -33,7 +33,7 @@ This repository is divided into two main parts, each serving a different purpose
 | --------------------------------------------- | --------------------------------------------------- | ------------------------------------------------- |
 | You want to **run the project**               | Go to `/tests` and open the Test README             | Short, practical steps with code                  |
 | You want to **understand the concepts**       | Go to `/tutoring` and read the matching Test folder | Deep explanations and exercises                   |
-| You want to **contribute or improve lessons** | Work directly inside `/tutoring` using Cursor       | The Markdown files are meant for AI-aided editing |
+| You want to **contribute or improve lessons** | Work directly inside `/tutoring`                    | The Markdown files are meant for AI-aided editing |
 
 ## 🧩 Learning Flow
 
@@ -53,7 +53,7 @@ Each stage adds one DevOps layer — frontend → backend → database → conta
 By separating runnable code (`/tests`) from educational notes (`/tutoring`):
 
 - Developers can **focus on execution** without being overwhelmed by explanations.
-- Teachers (or Cursor AI) can **iterate and improve** the lessons independently.
+- Teachers can **iterate and improve** the lessons independently.
 - The repo stays clean, modular, and scalable as the course grows.
 
 ## ✅ Final Note
