@@ -21,10 +21,13 @@ This step transforms your project from a local prototype into a collaborative, p
 
 ## ⚙️ Structure
 
-| Module                                      | Description                                                                                               | Outcome                                                  |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| **CI0 — Pipeline Setup**                    | Configure GitHub Actions or Azure Pipelines. Automate backend image build, run tests, and push artifacts. | Green pipeline on main and PRs; build artifacts visible. |
-| **collab0 — PR Template & Required Checks** | Define PR template, add required status checks in repo settings.                                          | PRs cannot merge unless CI passes.                       |
+| Module                                      | Description                                                                             | Outcome                                                 |
+| ------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **CI0 — Basic Build Verification**          | Set up GitHub Actions workflow. Verify code compiles automatically on every push.       | Basic CI pipeline that catches build failures.          |
+| **CI1 — Add Automated Testing**             | Add automated testing for backend and frontend. Learn parallel execution and caching.   | Tests run automatically, preventing bugs from merging.  |
+| **CI2 — Docker Integration & Dependencies** | Build and validate Docker images. Implement job dependencies and conditional execution. | Docker images validated, full stack integration tested. |
+| **CI3 — Production Pipeline & Security**    | Add security scanning, artifact publishing, and production features.                    | Production-ready pipeline with security validation.     |
+| **collab0 — PR Template & Required Checks** | Define PR template, add required status checks in repo settings.                        | PRs cannot merge unless CI passes.                      |
 
 ## ⚠️ Problem / Issue
 
@@ -42,7 +45,10 @@ This step transforms your project from a local prototype into a collaborative, p
 
 ## 📚 Detailed Modules
 
-- **[CI 0 Tutorial](./ci0.md)** — Pipeline setup and configuration
+- **[CI 0 Tutorial](./ci0.md)** — Basic build verification and workflow setup
+- **[CI 1 Tutorial](./ci1.md)** — Automated testing and parallel execution
+- **[CI 2 Tutorial](./ci2.md)** — Docker integration and job dependencies
+- **[CI 3 Tutorial](./ci3.md)** — Production pipeline and security scanning
 - **[Collab 0 Tutorial](./collab0.md)** — Collaboration and branch protection
 
 ## 🔍 Reflection
