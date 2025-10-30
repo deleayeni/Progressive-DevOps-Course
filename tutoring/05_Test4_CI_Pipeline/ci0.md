@@ -325,7 +325,7 @@ jobs:
 - ✅ **Learning:** Understanding of core CI concepts and workflow structure
 - ✅ **Scalability:** Pipeline works for both individual and team development
 - ❌ **Limitation:** No automated testing, no Docker builds, no security scanning
-- 🔜 **Next:** Add automated testing in CI 1
+- 🔜 **Next:** Learn how to create tests in Testing 0, then add them to CI pipeline in CI 1
 
 ## 🚀 Quick Start Checklist
 

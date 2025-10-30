@@ -1,27 +1,28 @@
-# 🔄 CI 1 — Add Automated Testing
+# 🔄 CI 1 — Add Testing to CI Pipeline
 
 ## 🎯 Learning Goal
 
 - Add automated testing to your CI pipeline
-- Learn to run tests for both backend and frontend
+- Run unit tests and integration tests automatically
 - Understand parallel job execution and optimization
 - Implement dependency caching for faster builds
+- Master the integration of testing with CI workflows
 
 ## ⚠️ Problem / Issue
 
-- Basic CI only checks if code compiles, but doesn't test functionality
+- CI0 only checks if code compiles, but doesn't test functionality
 - No automated testing means bugs can slip through to production
 - Manual testing doesn't scale with team collaboration
-- Slow builds waste time and resources
+- Tests exist but aren't run automatically on every code change
 
 ## 🧠 What You'll Do
 
-### 1. **Add backend testing**
+### 1. **Add backend testing to CI**
 
-Extend your basic pipeline to run Go tests:
+Extend your CI0 pipeline to run Go tests automatically:
 
 ```yaml
-name: CI Pipeline
+name: CI1 - Add Testing to CI Pipeline
 
 on:
   push:
@@ -39,13 +40,13 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.22"
+          go-version: "1.25"
 
       - name: Cache Go modules
         uses: actions/cache@v3
         with:
           path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('tests/test3-containerize-application/docker3/backend3/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
 
@@ -54,10 +55,15 @@ jobs:
           cd tests/test3-containerize-application/docker3/backend3
           go mod download
 
-      - name: Run tests
+      - name: Run unit tests
         run: |
           cd tests/test3-containerize-application/docker3/backend3
           go test -v ./...
+
+      - name: Run integration tests
+        run: |
+          cd tests/test3-containerize-application/docker3/backend3
+          go test -v -tags=integration ./...
 
       - name: Build backend
         run: |
@@ -65,9 +71,9 @@ jobs:
           go build -o main .
 ```
 
-### 2. **Add frontend testing**
+### 2. **Add frontend testing to CI**
 
-Include comprehensive Flutter testing:
+Include comprehensive Flutter testing in parallel:
 
 ```yaml
 test-frontend:
@@ -79,7 +85,7 @@ test-frontend:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: "3.16.0"
+        flutter-version: "3.24.0"
         channel: "stable"
 
     - name: Cache Flutter dependencies
@@ -87,38 +93,43 @@ test-frontend:
       with:
         path: |
           ~/.pub-cache
-          tests/test1-ui-backend/frontend1/.dart_tool
-        key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          tests/test3-containerize-application/docker3/frontend2/.dart_tool
+        key: ${{ runner.os }}-flutter-${{ hashFiles('tests/test3-containerize-application/docker3/frontend2/pubspec.lock') }}
         restore-keys: |
           ${{ runner.os }}-flutter-
 
     - name: Install Flutter dependencies
       run: |
-        cd tests/test1-ui-backend/frontend1
+        cd tests/test3-containerize-application/docker3/frontend2
         flutter pub get
 
-    - name: Run Flutter tests
+    - name: Run unit tests
       run: |
-        cd tests/test1-ui-backend/frontend1
+        cd tests/test3-containerize-application/docker3/frontend2
         flutter test
+
+    - name: Run integration tests
+      run: |
+        cd tests/test3-containerize-application/docker3/frontend2
+        flutter test integration_test/
 
     - name: Build Flutter web
       run: |
-        cd tests/test1-ui-backend/frontend1
+        cd tests/test3-containerize-application/docker3/frontend2
         flutter build web
 ```
 
-### 3. **Understanding parallel execution**
+### 3. **Understanding parallel execution and test types**
 
-Both jobs run simultaneously:
+Both jobs run simultaneously, testing different aspects:
 
 ```yaml
 jobs:
-  test-backend: # ← These run in parallel
+  test-backend: # ← Unit + Integration tests
     runs-on: ubuntu-latest
     steps: [...]
 
-  test-frontend: # ← These run in parallel
+  test-frontend: # ← Widget + Integration tests
     runs-on: ubuntu-latest
     steps: [...]
 ```
@@ -127,10 +138,16 @@ jobs:
 
 ```
 Time: 0s    5s    10s   15s   20s
-Backend:  [=====test=====]
-Frontend: [=====test=====]
+Backend:  [=====unit+integration=====]
+Frontend: [=====widget+integration=====]
 Total:    20s (not 40s!)
 ```
+
+**What gets tested:**
+
+- **Backend:** Unit tests + API integration tests
+- **Frontend:** Widget tests + Frontend-backend integration tests
+- **Both:** Build verification (compilation)
 
 ## 📖 Concepts Introduced
 
@@ -210,5 +227,7 @@ flutter test integration_test/ # Run integration tests
 - ✅ **Automation:** Tests run on every code change
 - ✅ **Performance:** Parallel execution and caching optimize speed
 - ✅ **Quality Gates:** Failed tests prevent bad code from merging
+- ✅ **Comprehensive:** Both unit and integration tests run automatically
+- ✅ **Foundation:** Ready for Docker integration and advanced CI features
 - ❌ **Limitation:** No Docker builds, no security scanning
 - 🔜 **Next:** Add Docker integration and container validation in CI 2

@@ -1,4 +1,4 @@
-name: CI0 - Containerized Build Verification
+name: CI1 - Add Testing to CI Pipeline
 
 on:
     push:
@@ -7,7 +7,8 @@ on:
         branches: [main]
 
 jobs:
-    build-backend:
+    # Test the backend unit tests
+    test-backend:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
@@ -17,14 +18,14 @@ jobs:
               uses: actions/setup-go@v4
               with:
                   go-version: "1.25"
-                  cache: false
 
-            - name: Build Backend
+            - name: Run Backend Tests
               run: |
-                  cd tests/test3-containerize-application/docker3/backend3
-                  go build -o main .
+                  cd tests/test4-ci-pipeline/testing0/backend1
+                  go test -v
 
-    build-frontend:
+    # Test the frontend widget tests
+    test-frontend:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
@@ -35,9 +36,8 @@ jobs:
               with:
                   flutter-version: "3.35.7"
 
-            - name: Build Frontend
+            - name: Run Frontend Tests
               run: |
-                  cd tests/test3-containerize-application/docker3/frontend2
-                  flutter build web
-
-
+                  cd tests/test4-ci-pipeline/testing0/frontend0
+                  flutter pub get
+                  flutter test
