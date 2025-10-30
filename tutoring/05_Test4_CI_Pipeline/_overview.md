@@ -24,10 +24,12 @@ This step transforms your project from a local prototype into a collaborative, p
 | Module                                      | Description                                                                             | Outcome                                                 |
 | ------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | **CI0 — Basic Build Verification**          | Set up GitHub Actions workflow. Verify code compiles automatically on every push.       | Basic CI pipeline that catches build failures.          |
-| **Testing0 — Basic Testing Fundamentals**   | Learn to write unit tests in Go and Flutter. Master testing concepts and patterns.      | Ability to write and run basic tests locally.           |
+| **Testing0 — Unit Testing**                 | Learn to write unit tests in Go and Flutter. Test individual functions in isolation.    | Ability to write and run basic unit tests.              |
 | **CI1 — Add Testing to CI Pipeline**        | Integrate automated testing into CI. Run unit tests automatically.                      | Tests run automatically, preventing bugs from merging.  |
+| **Testing1 — Integration Testing**          | Learn to test API endpoints and frontend-backend communication with real services.      | Ability to write integration tests.                     |
+| **Testing2 — E2E Testing**                  | Learn end-to-end testing with browser automation. Test complete user workflows.         | Ability to write E2E tests for critical user journeys.  |
+| **Testing3 — Acceptance Testing**           | Learn acceptance testing and BDD patterns. Validate business requirements.              | Ability to write stakeholder-friendly acceptance tests. |
 | **CI2 — Docker Integration & Dependencies** | Build and validate Docker images. Implement job dependencies and conditional execution. | Docker images validated, full stack integration tested. |
-| **Testing1 — Integration Testing**          | Learn to test API endpoints and frontend-backend communication.                         | Ability to write integration tests and test workflows.  |
 | **CI3 — Production Pipeline & Security**    | Add security scanning, artifact publishing, and production features.                    | Production-ready pipeline with security validation.     |
 | **collab0 — PR Template & Required Checks** | Define PR template, add required status checks in repo settings.                        | PRs cannot merge unless CI passes.                      |
 
@@ -47,11 +49,14 @@ This step transforms your project from a local prototype into a collaborative, p
 
 ## 📚 Detailed Modules
 
+- **[Testing Overview](./testingOverview.md)** — Complete guide to all testing levels (unit → integration → E2E → acceptance)
 - **[CI 0 Tutorial](./ci0.md)** — Basic build verification and workflow setup
-- **[Testing 0 Tutorial](./testing0.md)** — Basic testing fundamentals and unit tests
+- **[Testing 0 Tutorial](./testing0.md)** — Unit testing fundamentals
 - **[CI 1 Tutorial](./ci1.md)** — Add testing to CI pipeline
+- **[Testing 1 Tutorial](./testing1.md)** — Integration testing
+- **[Testing 2 Tutorial](./testing2.md)** — End-to-end (E2E) testing
+- **[Testing 3 Tutorial](./testing3.md)** — Acceptance testing and BDD
 - **[CI 2 Tutorial](./ci2.md)** — Docker integration and job dependencies
-- **[Testing 1 Tutorial](./testing1.md)** — Integration testing and API testing
 - **[CI 3 Tutorial](./ci3.md)** — Production pipeline and security scanning
 - **[Collab 0 Tutorial](./collab0.md)** — Collaboration and branch protection
 

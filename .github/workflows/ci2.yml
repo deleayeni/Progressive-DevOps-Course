@@ -1,0 +1,97 @@
+name: CI2 - Docker Build & Full Stack Validation
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    # unit-test-backend from CI1
+    unit-test-backend:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Set up Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: "1.25"
+            - name: Run Backend Tests
+              run: |
+                  cd tests/test4-ci-pipeline/testing0/backend1
+                  go test -v
+
+    # unit-test-frontend from CI1
+    unit-test-frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  flutter-version: "3.35.7"
+            - name: Run Frontend Tests
+              run: |
+                  cd tests/test4-ci-pipeline/testing0/frontend0
+                  flutter pub get
+                  flutter test
+
+    # Build Docker images AFTER tests pass
+    build-docker-images:
+        needs: [unit-test-backend, unit-test-frontend] # ← Job dependencies!
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+            - name: Build Flutter web
+              run: |
+                  cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+                  flutter pub get
+                  flutter build web
+            - name: Build Backend Docker Image
+              run: |
+                  cd tests/test4-ci-pipeline/testing1/docker3/backend3
+                  docker build -t counter-backend:${{ github.sha }} .
+            - name: Build Frontend Docker Image
+              run: |
+                  cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+                  docker build -t counter-frontend:${{ github.sha }} .
+
+    # NEW: Validate full stack with Docker Compose
+    test-full-stack:
+        needs: [build-docker-images] # ← Runs only after images are built
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+            - name: Build Flutter web
+              run: |
+                  cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+                  flutter pub get
+                  flutter build web
+            - name: Start full stack
+              run: |
+                  cd tests/test4-ci-pipeline/testing1/docker3
+                  docker compose up -d
+            - name: Wait for services
+              run: |
+                  timeout 60 bash -c 'until curl -f http://localhost:8080/counter; do sleep 2; done'
+            - name: Test Backend
+              run: |
+                  curl -f http://localhost:8080/counter
+            - name: Test Frontend
+              run: |
+                  curl -f http://localhost:3000
+            - name: Cleanup
+              if: always()
+              run: |
+                  cd tests/test4-ci-pipeline/testing1/docker3
+                  docker compose down

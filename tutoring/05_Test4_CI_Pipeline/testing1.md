@@ -33,279 +33,295 @@
 - **Unit test:** "Does the engine start?" (test engine alone)
 - **Integration test:** "Does the car drive?" (test engine + transmission + wheels together)
 
-### 2. **Test Backend API Endpoints**
+### 2. **Test Backend to Database Integration**
 
-**Create integration test:** `backend3/api_test.go`
+**Create integration test:** `backend3/integration_test.go`
+
+This test verifies that the backend handlers correctly interact with the PostgreSQL database:
 
 ```go
 package main
 
 import (
-    "bytes"
-    "encoding/json"
+    "context"
     "net/http"
     "net/http/httptest"
     "testing"
+
+    "github.com/jackc/pgx/v5"
 )
 
-func TestCounterAPI(t *testing.T) {
-    // Set up test database (in-memory or test database)
-    setupTestDB(t)
-    defer cleanupTestDB(t)
-
-    // Create test server
-    server := httptest.NewServer(http.HandlerFunc(getCounterHandler))
-    defer server.Close()
-
-    t.Run("GET /counter returns current value", func(t *testing.T) {
-        // Act: Make HTTP request
-        resp, err := http.Get(server.URL + "/counter")
-        if err != nil {
-            t.Fatalf("Failed to make request: %v", err)
-        }
-        defer resp.Body.Close()
-
-        // Assert: Check response
-        if resp.StatusCode != http.StatusOK {
-            t.Errorf("Expected status 200, got %d", resp.StatusCode)
-        }
-
-        var result CounterResponse
-        if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-            t.Fatalf("Failed to decode response: %v", err)
-        }
-
-        if result.Value < 0 {
-            t.Errorf("Counter value should not be negative, got %d", result.Value)
-        }
-    })
-
-    t.Run("POST /counter/increment increments value", func(t *testing.T) {
-        // Get initial value
-        resp, _ := http.Get(server.URL + "/counter")
-        var initial CounterResponse
-        json.NewDecoder(resp.Body).Decode(&initial)
-        resp.Body.Close()
-
-        // Increment counter
-        resp, err := http.Post(server.URL+"/counter/increment", "application/json", nil)
-        if err != nil {
-            t.Fatalf("Failed to increment: %v", err)
-        }
-        defer resp.Body.Close()
-
-        if resp.StatusCode != http.StatusOK {
-            t.Errorf("Expected status 200, got %d", resp.StatusCode)
-        }
-
-        var result CounterResponse
-        json.NewDecoder(resp.Body).Decode(&result)
-
-        if result.Value != initial.Value+1 {
-            t.Errorf("Expected %d, got %d", initial.Value+1, result.Value)
-        }
-    })
-}
-
-func TestCORSHeaders(t *testing.T) {
-    server := httptest.NewServer(http.HandlerFunc(getCounterHandler))
-    defer server.Close()
-
-    // Test CORS headers
-    resp, err := http.Get(server.URL + "/counter")
+func TestBackendToDatabaseIntegration(t *testing.T) {
+    // 1. Connect to database (already running from docker-compose)
+    dsn := "postgres://postgres:secret@localhost:5433/appdb?sslmode=disable"
+    testDB, err := pgx.Connect(context.Background(), dsn)
     if err != nil {
-        t.Fatalf("Failed to make request: %v", err)
+        t.Skip("Database not running, skipping integration test")
     }
-    defer resp.Body.Close()
 
-    corsOrigin := resp.Header.Get("Access-Control-Allow-Origin")
-    if corsOrigin != "*" {
-        t.Errorf("Expected CORS origin '*', got '%s'", corsOrigin)
+    // 2. Set global db variable (handlers use this!)
+    db = testDB
+    defer db.Close(context.Background())
+
+    // 3. Reset counter to 0 in database
+    testDB.Exec(context.Background(),
+        "INSERT INTO counters (id, value) VALUES (1, 0) ON CONFLICT (id) DO UPDATE SET value = 0")
+
+    // 4. Call increment handler
+    req, _ := http.NewRequest("POST", "/counter/increment", nil)
+    rr := httptest.NewRecorder()
+    incrementCounterHandler(rr, req)  // This writes to database!
+
+    // 5. Read directly from database to verify
+    var dbValue int
+    testDB.QueryRow(context.Background(),
+        "SELECT value FROM counters WHERE id=1").Scan(&dbValue)
+
+    // 6. Assert: Database should show 1
+    if dbValue != 1 {
+        t.Errorf("Expected database value 1, got %d", dbValue)
     }
 }
 ```
 
+**What this test does:**
+
+- Connects to the real PostgreSQL database running in Docker
+- Sets the global `db` variable so handlers use the test database
+- Resets the counter to 0 for a clean test state
+- Calls the actual `incrementCounterHandler` function
+- Reads directly from the database to verify the value was incremented
+- This tests the **complete flow**: Handler → Database write → Database read
+
 ### 3. **Test Frontend-Backend Integration**
 
-**Create integration test:** `frontend2/integration_test.dart`
+**Create integration test:** `frontend2/test/api_integration_test.dart`
+
+This test verifies that the Flutter frontend correctly communicates with the Go backend API:
 
 ```dart
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
-import 'package:frontend2/main.dart';
-import 'package:frontend2/services/api_client.dart';
+import '../lib/services/api_client.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  group('Frontend to Backend Integration Tests', () {
+    late ApiClient api;
 
-  group('Frontend-Backend Integration Tests', () {
-    testWidgets('App loads and displays counter from backend', (WidgetTester tester) async {
-      // Arrange: Start the app
-      await tester.pumpWidget(const MaterialApp(home: CounterPage()));
-      await tester.pumpAndSettle(); // Wait for async operations
-
-      // Assert: App should show loading or counter value
-      expect(find.textContaining('Counter:'), findsOneWidget);
+    setUp(() {
+      // Create API client
+      api = ApiClient();
     });
 
-    testWidgets('Increment button calls backend API', (WidgetTester tester) async {
-      // This test would require a running backend
-      // In real integration tests, you'd start a test server
+    test('GET /counter returns current value from backend', () async {
+      // Act: Call the API
+      final value = await api.getCounter();
 
-      await tester.pumpWidget(const MaterialApp(home: CounterPage()));
-      await tester.pumpAndSettle();
+      // Assert: Should return a valid integer
+      expect(value, isA<int>());
+      expect(value, greaterThanOrEqualTo(0));
+    });
 
-      // Find the current counter value
-      final counterText = find.textContaining('Counter:');
-      expect(counterText, findsOneWidget);
+    test('POST /counter/increment increments and returns new value', () async {
+      // Arrange: Get initial value
+      final initialValue = await api.getCounter();
 
-      // Tap increment button
-      await tester.tap(find.byIcon(Icons.add));
-      await tester.pumpAndSettle();
+      // Act: Increment
+      final newValue = await api.incrementCounter();
 
-      // Verify the counter updated (this would require backend)
-      expect(find.textContaining('Counter:'), findsOneWidget);
+      // Assert: Should be incremented
+      expect(newValue, equals(initialValue + 1));
+    });
+
+    test('Multiple increments work correctly', () async {
+      // Arrange: Get initial value
+      final initialValue = await api.getCounter();
+
+      // Act: Increment multiple times
+      final value1 = await api.incrementCounter();
+      final value2 = await api.incrementCounter();
+      final value3 = await api.incrementCounter();
+
+      // Assert: Each should increment
+      expect(value1, equals(initialValue + 1));
+      expect(value2, equals(initialValue + 2));
+      expect(value3, equals(initialValue + 3));
     });
   });
 }
 ```
 
-### 4. **Test Database Integration**
+**What this test does:**
 
-**Create database integration test:** `backend3/database_test.go`
+- Tests the `ApiClient` class which makes real HTTP requests to the backend
+- Verifies that `getCounter()` returns valid data from the backend
+- Confirms that `incrementCounter()` increments the counter via the API
+- Tests multiple sequential increments to ensure state persistence
+- This tests the **complete flow**: Frontend → HTTP Request → Backend → Database → Response → Frontend
 
-```go
-func TestDatabaseIntegration(t *testing.T) {
-    // Set up test database
-    db := setupTestDatabase(t)
-    defer db.Close()
+### 4. **Add Integration Tests to CI Pipeline**
 
-    t.Run("Database connection works", func(t *testing.T) {
-        var count int
-        err := db.QueryRow("SELECT COUNT(*) FROM counters").Scan(&count)
-        if err != nil {
-            t.Fatalf("Database query failed: %v", err)
-        }
+**Update CI workflow:** `.github/workflows/ci1.yml`
 
-        // Should have at least one row (initialized in main.go)
-        if count < 1 {
-            t.Error("Expected at least one counter row")
-        }
-    })
+Add an `integration-tests` job to run tests against a real Docker stack:
 
-    t.Run("Counter increment persists to database", func(t *testing.T) {
-        // Get initial value
-        var initialValue int
-        err := db.QueryRow("SELECT value FROM counters WHERE id=1").Scan(&initialValue)
-        if err != nil {
-            t.Fatalf("Failed to get initial value: %v", err)
-        }
+```yaml
+integration-tests:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-        // Increment in database
-        var newValue int
-        err = db.QueryRow("UPDATE counters SET value = value + 1 WHERE id=1 RETURNING value").Scan(&newValue)
-        if err != nil {
-            t.Fatalf("Failed to increment: %v", err)
-        }
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: "1.25"
 
-        // Verify increment
-        if newValue != initialValue+1 {
-            t.Errorf("Expected %d, got %d", initialValue+1, newValue)
-        }
-    })
-}
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.35.7"
 
-func setupTestDatabase(t *testing.T) *sql.DB {
-    // Set up test database connection
-    // This would connect to a test database instance
-    db, err := sql.Open("postgres", "test_database_url")
-    if err != nil {
-        t.Fatalf("Failed to connect to test database: %v", err)
-    }
-    return db
-}
+    # Build Flutter web before docker-compose
+    - name: Build Flutter web
+      run: |
+        cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+        flutter pub get
+        flutter build web
+
+    # Start database and backend (NOT frontend, since it needs build/)
+    - name: Start services with docker-compose
+      run: |
+        cd tests/test4-ci-pipeline/testing1/docker3
+        docker compose up -d db backend
+
+    # Wait for backend to be ready
+    - name: Wait for backend to be ready
+      run: |
+        timeout 60 bash -c 'until curl -f http://localhost:8080/counter; do sleep 2; done'
+
+    # Run backend integration tests
+    - name: Run Backend Integration Tests
+      env:
+        DATABASE_URL: postgres://postgres:secret@localhost:5433/appdb?sslmode=disable
+      run: |
+        cd tests/test4-ci-pipeline/testing1/docker3/backend3
+        go test -v
+
+    # Run frontend integration tests
+    - name: Run Frontend Integration Tests
+      run: |
+        cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+        flutter pub get
+        flutter test test/api_integration_test.dart
+
+    # Always cleanup, even if tests fail
+    - name: Cleanup
+      if: always()
+      run: |
+        cd tests/test4-ci-pipeline/testing1/docker3
+        docker compose down
 ```
+
+**Key steps explained:**
+
+1. **Build Flutter web:** Creates `build/web/` directory needed by Docker frontend container
+2. **Start services:** Runs `db` and `backend` containers (frontend is optional for these tests)
+3. **Wait for backend:** Ensures backend is ready before running tests
+4. **Run tests:** Executes both backend and frontend integration tests
+5. **Cleanup:** Always runs to stop containers, even if tests fail
 
 ## 📖 Concepts Introduced
 
 ### **Integration Testing Patterns**
 
-**API Testing:**
+**Backend-to-Database Testing:**
 
-- Test HTTP endpoints with real requests
-- Verify response status codes and headers
-- Test request/response data formats
-- Validate CORS and security headers
+- Test database connections with real PostgreSQL database
+- Verify data persistence by reading directly from database
+- Use `pgx.Connect()` to connect to running database
+- Test complete flow: Handler → Database write → Database read
+- Set global variables to allow handlers to use test database
 
-**Database Testing:**
+**Frontend-to-Backend Testing:**
 
-- Test database connections and queries
-- Verify data persistence
-- Test transaction handling
-- Validate data integrity
+- Test HTTP API communication with real backend
+- Use `ApiClient` to make actual HTTP requests
+- Test sequential operations to verify state persistence
+- Validate data flow: Frontend → HTTP → Backend → Database → Response → Frontend
 
-**Frontend-Backend Testing:**
+**Docker-based Integration Testing:**
 
-- Test complete user workflows
-- Verify API communication
-- Test error handling and edge cases
-- Validate data flow between components
+- Use `docker compose up -d` to start services
+- Build Flutter web assets before starting containers
+- Wait for services to be ready before running tests
+- Always cleanup containers with `docker compose down`
 
 ### **Testing Tools and Techniques**
 
-**HTTP Testing:**
+**Go Integration Testing:**
 
 ```go
-// httptest.NewServer - Create test HTTP server
-// http.Get/Post - Make HTTP requests
-// json.NewDecoder - Parse JSON responses
+// pgx.Connect() - Connect to PostgreSQL database
+// httptest.NewRecorder - Capture HTTP responses
+// Global variable injection - Set db for handlers
+// t.Skip() - Skip test if dependencies unavailable
 ```
 
-**Flutter Integration Testing:**
+**Flutter API Testing:**
 
 ```dart
-// IntegrationTestWidgetsFlutterBinding - Set up integration test
-// tester.pumpAndSettle() - Wait for async operations
-// Real API calls (with test backend)
+// ApiClient - Real HTTP client for testing
+// getCounter() - Get current value from backend
+// incrementCounter() - Increment counter via API
+// expect() with isA<int>() - Type assertions
 ```
 
-**Test Database Setup:**
+**CI Integration:**
 
-```go
-// Separate test database
-// Test data setup and cleanup
-// Transaction rollback for isolation
+```yaml
+# docker compose up -d db backend - Start specific services
+# timeout bash -c 'until curl...' - Wait for service readiness
+# if: always() - Always run cleanup step
+# Build Flutter web before docker compose
 ```
 
 ### **Integration Test Best Practices**
 
 **Test Environment:**
 
-- Use separate test database
-- Mock external services when possible
-- Clean up test data after each test
-- Use test-specific configuration
+- Use real services running in Docker for realistic testing
+- Connect to actual databases (not mocks) for data persistence tests
+- Build Flutter assets before starting Docker containers
+- Always cleanup Docker containers even if tests fail (`if: always()`)
 
 **Test Organization:**
 
-- Group related tests together
-- Use descriptive test names
+- Separate unit tests (testing0) from integration tests (testing1)
+- Group related tests together with `group()` in Flutter and subtests in Go
+- Use descriptive test names that explain what's being tested
 - Test both success and failure scenarios
-- Verify side effects and state changes
 
-**Performance Considerations:**
+**CI Considerations:**
 
-- Integration tests are slower than unit tests
-- Run them less frequently
-- Use them for critical user workflows
-- Consider parallel execution
+- Integration tests are slower than unit tests - run them in separate jobs
+- Wait for services to be ready before running tests
+- Use `t.Skip()` to gracefully skip tests if dependencies are unavailable
+- Consider running integration tests only on main branch or nightly builds
+
+**Challenges We Solved:**
+
+- **Problem:** Flutter `build/web/` directory not in git (build artifacts shouldn't be committed)
+- **Solution:** Build Flutter web assets before running `docker compose up`
+- **Problem:** Frontend Docker build fails in CI due to missing build assets
+- **Solution:** Only start `db` and `backend` services for integration tests
+- **Problem:** Tests need time for database to initialize
+- **Solution:** Wait for backend to respond before running tests
 
 ## 🔍 Reflection
 
-- ✅ **Solved:** Understanding of integration testing concepts
-- ✅ **Skills:** Ability to test API endpoints and database interactions
-- ✅ **Knowledge:** How to test frontend-backend communication in Docker environment
-- ✅ **Foundation:** Ready to implement comprehensive testing in production CI
-- ❌ **Limitation:** Tests still run manually, not automated
-- 🔜 **Next:** Add integration tests to production CI pipeline in CI 3
+- ✅ **Solved:** Understanding of integration testing concepts and how they differ from unit testing
+- ✅ **Skills:** Ability to test database interactions with real PostgreSQL and HTTP API communication
+- ✅ **Knowledge:** How to test frontend-backend communication using Docker Compose and CI
+- ✅ **Foundation:** Complete integration test suite for backend-database and frontend-backend flows
+- ✅ **Implemented:** Integration tests are now automated in CI pipeline via `ci1.yml`
+- 🔜 **Next:** Continue improving CI pipeline with deployment and additional testing stages
