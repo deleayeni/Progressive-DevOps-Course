@@ -67,7 +67,7 @@ jobs:
                   cd tests/test4-ci-pipeline/testing1/docker3/frontend2
                   docker build -t counter-frontend:${{ github.sha }} .
 
-    # NEW: Validate full stack with Docker Compose
+    
     test-full-stack:
         needs: [build-docker-images] # ← Runs only after images are built
         runs-on: ubuntu-latest
@@ -98,7 +98,7 @@ jobs:
                   curl -f http://localhost:8080/counter
             - name: Test Frontend
               run: |
-                  curl -f http://localhost:3000
+                  curl -f http://localhost:80
             - name: Cleanup
               if: always()
               run: |
