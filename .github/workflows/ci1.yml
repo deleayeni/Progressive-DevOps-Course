@@ -67,6 +67,12 @@ jobs:
         with:
           flutter-version: "3.35.7"
 
+      - name: Build Flutter web
+        run: |
+          cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+          flutter pub get
+          flutter build web
+
       - name: Start services with docker-compose
         run: |
           cd tests/test4-ci-pipeline/testing1/docker3
