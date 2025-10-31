@@ -107,41 +107,54 @@ jobs:
 Publish Docker images to container registry:
 
 ```yaml
-publish-artifacts:
-  needs: [test-backend, test-frontend, build-docker]
-  runs-on: ubuntu-latest
-  if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+name: CI Pipeline
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+permissions:
+  contents: read
+  packages: write
 
-    - name: Build and push backend image
-      uses: docker/build-push-action@v5
-      with:
-        context: tests/test3-containerize-application/docker3/backend3
-        push: true
-        tags: |
-          ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-          ghcr.io/${{ github.repository }}/backend:latest
+jobs:
+  publish-artifacts:
+    needs: [test-backend, test-frontend, build-docker]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Build and push frontend image
-      uses: docker/build-push-action@v5
-      with:
-        context: tests/test1-ui-backend/frontend1
-        push: true
-        tags: |
-          ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
-          ghcr.io/${{ github.repository }}/frontend:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: tests/test3-containerize-application/docker3/backend3
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/backend:latest
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: tests/test1-ui-backend/frontend1
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/frontend:latest
 ```
 
 ### 3. **Add status badges and monitoring**
@@ -239,7 +252,7 @@ environment: production
 
 **Multi-stage Validation:**
 
-```
+```text
 test → build → security → publish → deploy
 ```
 
@@ -274,6 +287,38 @@ test → build → security → publish → deploy
 - Version tagging
 - Cleanup policies
 - Access controls
+
+## 🚨 Common Issues & Solutions
+
+### **Issue 1: Permission Denied When Pushing to GitHub Container Registry**
+
+**Problem:** Workflow fails with `denied: installation not allowed to Create organization package`
+
+**Solution:** Add permissions to your workflow file:
+
+```yaml
+permissions:
+  contents: read
+  packages: write
+```
+
+This grants the workflow permission to push Docker images to GitHub Container Registry (GHCR).
+
+### **Issue 2: Docker Build Succeeds but Push Fails**
+
+**Problem:** Images build successfully locally but fail to push in CI
+
+**Common Causes:**
+
+- Missing `packages: write` permission
+- Incorrect registry URL format
+- Authentication issues with GITHUB_TOKEN
+
+**Solution:** Verify your workflow includes:
+
+1. Proper permissions (see Issue 1)
+2. Correct login configuration with registry and credentials
+3. Valid image tags following GHCR naming conventions
 
 ## 🔍 Reflection
 

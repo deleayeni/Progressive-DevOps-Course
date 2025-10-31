@@ -24,6 +24,11 @@
 
 - **Fast** - Tests run in milliseconds
 - **Isolated** - Each test is independent
+  - Must NOT call a database
+  - Must NOT use the filesystem
+  - Must NOT talk to external systems
+  - Must NOT involve interaction between components
+  - This strict isolation is directly tied to speed and fast feedback loops
 - **Repeatable** - Same results every time
 - **Automated** - No manual intervention needed
 
@@ -31,9 +36,23 @@
 
 1. **Catch bugs early** - Find problems before users do
 2. **Prevent regressions** - Ensure changes don't break existing functionality
+   - Unit tests form a **core part of the regression test suite**
+   - Together with other automated tests, they run continuously in CI/CD
+   - This ensures that new code changes don't break existing functionality
 3. **Document behavior** - Tests show how code should work
 4. **Enable refactoring** - Change code confidently knowing tests will catch issues
 5. **Improve design** - Writing tests reveals code structure problems
+
+### Role in Testing Strategy
+
+**Unit tests are classified as "technology-facing tests that support the development process."**
+
+In a comprehensive testing strategy, unit tests sit alongside:
+
+- **Component tests** - Testing larger components in isolation
+- **Deployment tests** - Verifying deployments work correctly
+
+Together, these technology-facing tests form the foundation of your automated testing pyramid. Unit tests are the **fastest layer** in this multi-level strategy that feeds into your deployment pipeline.
 
 ## 📖 Unit Testing in Go
 
@@ -396,18 +415,26 @@ Test with **real dependencies** running:
 - Real file system
 - Slower but comprehensive
 
-#### 2. **Mocking** (Advanced)
+#### 2. **Test Doubles** (Mocking, Stubs, Fakes)
 
-Replace dependencies with fake implementations:
+Replace dependencies with fake implementations using **test doubles**. The book identifies five main types:
+
+1. **Dummy** - Placeholder objects passed to satisfy parameters (unused)
+2. **Fake** - Working implementation with simplified behavior (in-memory database)
+3. **Stub** - Pre-programmed responses to method calls
+4. **Spy** - Records how it was called for verification
+5. **Mock** - Pre-programmed expectations that verify behavior
+
+**⚠️ Important:** The book cautions against **overusing mocks** - they can make tests brittle and tightly coupled to implementation details.
 
 ```go
-// Advanced technique - not covered in this course
+// Example: Using interfaces for testability
 type Database interface {
     GetCounter(id int) (int, error)
 }
 
 // In tests, use a fake database
-fakeDB := &FakeDatabase{}
+fakeDB := &FakeDatabase{}  // This is a "fake" test double
 handler := NewHandler(fakeDB)
 ```
 
@@ -450,7 +477,7 @@ func getOrderTotal(orderID string) float64 {
 
 ### The Spectrum of Testing
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │ Unit Tests                     Integration Tests    │
 │                                                      │
@@ -459,6 +486,7 @@ func getOrderTotal(orderID string) float64 {
 │ ✓ No dependencies              ✓ End-to-end         │
 │ ✗ Limited scope               ✗ Slow               │
 │ ✗ Miss integration bugs       ✗ Complex setup      │
+│ ✗ Miss interaction bugs       ✗ Complex setup      │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -468,6 +496,7 @@ func getOrderTotal(orderID string) float64 {
 - No external dependencies
 - Fast (< 1ms per test)
 - Best for: Pure logic, calculations, transformations
+- **Limitation:** Even without external dependencies, they can miss bugs caused by **interaction between modules**
 
 **Integration Tests:**
 
@@ -476,9 +505,41 @@ func getOrderTotal(orderID string) float64 {
 - Slower (seconds per test)
 - Best for: End-to-end workflows, API interactions
 
+### The Testing Pyramid
+
+Unit tests are positioned **below component and integration tests** in the testing hierarchy:
+
+```text
+        ╱╲        ← Few Integration Tests (slow, comprehensive)
+       ╱  ╲
+      ╱____╲      ← More Component Tests
+     ╱      ╲
+    ╱________╲    ← Many Unit Tests (fast, isolated)
+```
+
+This pyramid ensures that most tests are fast unit tests, with fewer (but comprehensive) integration tests at the top. This hierarchy feeds into your deployment pipeline, providing fast feedback at each level.
+
+### Speed vs. Limitations Trade-off
+
+The book explains a critical trade-off with unit tests:
+
+#### Speed (Fast Feedback)
+
+- Unit tests run in milliseconds
+- Developers get immediate feedback
+- This speed is essential for maintaining development velocity
+
+#### But They Miss Interaction Bugs
+
+- Even without external dependencies, unit tests can miss bugs caused by **interaction between modules**
+- For example: two functions work correctly in isolation, but fail when called together
+- This is why integration tests are still necessary at higher levels of the testing pyramid
+
 ### Key Takeaway
 
 > **Unit tests work best for code with minimal dependencies. Code with many external dependencies (databases, APIs, services) cannot be easily unit tested and requires integration testing instead.**
+>
+> **Remember:** Unit tests excel at speed and catching logic bugs, but they cannot catch all bugs - particularly those involving interactions between components. This is why they form the base of the testing pyramid, not the entire strategy.
 
 **In Testing 1**, you'll learn how to write integration tests for code with dependencies.
 
@@ -516,6 +577,17 @@ func TestFunctionName(t *testing.T) {
 - ✅ **Edge cases** - Boundary conditions (empty input, max values, etc.)
 - ✅ **Error conditions** - Invalid inputs, missing data
 - ✅ **Business logic** - Core functionality and rules
+
+**Coverage Expectation:**
+
+The industry standard is that **unit tests should cover virtually every code path**, with a **bare minimum of 80% code coverage**. This quantitative benchmark ensures comprehensive testing while acknowledging that perfect 100% coverage may not always be practical or cost-effective.
+
+Coverage tools help you measure this:
+```bash
+go test -cover
+go test -coverprofile=coverage.out
+go tool cover -html=coverage.out
+```
 
 **Don't Test:**
 
