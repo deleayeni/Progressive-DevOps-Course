@@ -47,8 +47,8 @@ jobs:
                   context: tests/test4-ci-pipeline/testing1/docker3/backend3
                   push: true # This actually pushes to registry
                   tags: |
-                      ghcr.io/deleayeni/progressive-devops-course/backend:${{ github.sha }}
-                      ghcr.io/deleayeni/progressive-devops-course/backend:latest
+                      ghcr.io/deleayeni/backend:${{ github.sha }}
+                      ghcr.io/deleayeni/backend:latest
 
             # Step 5: Build frontend (need Flutter web assets first)
             - name: Set up Flutter
@@ -68,5 +68,5 @@ jobs:
                   context: tests/test4-ci-pipeline/testing1/docker3/frontend2
                   push: true
                   tags: |
-                      ghcr.io/deleayeni/progressive-devops-course/frontend:${{ github.sha }}
-                      ghcr.io/deleayeni/progressive-devops-course/frontend:latest
+                      ghcr.io/deleayeni/frontend:${{ github.sha }}
+                      ghcr.io/deleayeni/frontend:latest
