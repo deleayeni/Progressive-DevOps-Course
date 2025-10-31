@@ -1,4 +1,4 @@
-name: CI3 - Security Scanning
+name: CI3 - Security & Publishing
 
 on:
     push:
@@ -7,14 +7,68 @@ on:
         branches: [main]
 
 jobs:
+    # Your existing security scan
     security-scan:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-
             - name: Run Trivy vulnerability scanner
               uses: aquasecurity/trivy-action@master
               with:
                   scan-type: "fs"
                   scan-ref: "."
+
+    # NEW JOB: Build and publish Docker images
+    build-and-publish:
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' 
+        steps:
+            # Step 1: Get your code
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            # Step 2: Set up Docker to build images
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            # Step 3: Login to GitHub Container Registry
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }} # Your GitHub username
+                  password: ${{ secrets.GITHUB_TOKEN }} # Secret token GitHub provides
+
+            # Step 4: Build and push backend image
+            - name: Build and push backend image
+              uses: docker/build-push-action@v5
+              with:
+                  context: tests/test4-ci-pipeline/testing1/docker3/backend3
+                  push: true # This actually pushes to registry
+                  tags: |
+                      ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+                      ghcr.io/${{ github.repository }}/backend:latest
+
+            # Step 5: Build frontend (need Flutter web assets first)
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  flutter-version: "3.35.7"
+            - name: Build Flutter web
+              run: |
+                  cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+                  flutter pub get
+                  flutter build web
+
+            # Step 6: Build and push frontend image
+            - name: Build and push frontend image
+              uses: docker/build-push-action@v5
+              with:
+                  context: tests/test4-ci-pipeline/testing1/docker3/frontend2
+                  push: true
+                  tags: |
+                      ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+                      ghcr.io/${{ github.repository }}/frontend:latest
+                      
+
