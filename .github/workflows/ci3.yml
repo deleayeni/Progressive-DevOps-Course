@@ -22,7 +22,7 @@ jobs:
     # NEW JOB: Build and publish Docker images
     build-and-publish:
         runs-on: ubuntu-latest
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' 
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Only on main pushes
         steps:
             # Step 1: Get your code
             - name: Checkout code
@@ -47,8 +47,8 @@ jobs:
                   context: tests/test4-ci-pipeline/testing1/docker3/backend3
                   push: true # This actually pushes to registry
                   tags: |
-                      ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-                      ghcr.io/${{ github.repository }}/backend:latest
+                      ghcr.io/deleayeni/progressive-devops-course/backend:${{ github.sha }}
+                      ghcr.io/deleayeni/progressive-devops-course/backend:latest
 
             # Step 5: Build frontend (need Flutter web assets first)
             - name: Set up Flutter
@@ -68,7 +68,5 @@ jobs:
                   context: tests/test4-ci-pipeline/testing1/docker3/frontend2
                   push: true
                   tags: |
-                      ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
-                      ghcr.io/${{ github.repository }}/frontend:latest
-                      
-
+                      ghcr.io/deleayeni/progressive-devops-course/frontend:${{ github.sha }}
+                      ghcr.io/deleayeni/progressive-devops-course/frontend:latest

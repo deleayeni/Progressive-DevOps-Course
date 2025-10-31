@@ -1,102 +1,102 @@
-name: CI1 - Add Testing to CI Pipeline
+# name: CI1 - Add Testing to CI Pipeline
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
 
-jobs:
-  # Test the backend unit tests
-  unit-test-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+# jobs:
+#   # Test the backend unit tests
+#   unit-test-backend:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.25"
+#       - name: Set up Go
+#         uses: actions/setup-go@v4
+#         with:
+#           go-version: "1.25"
 
-      - name: Run Backend Tests
-        run: |
-          cd tests/test4-ci-pipeline/testing0/backend1
-          go test -v
+#       - name: Run Backend Tests
+#         run: |
+#           cd tests/test4-ci-pipeline/testing0/backend1
+#           go test -v
 
-  # Test the frontend widget tests
-  unit-test-frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#   # Test the frontend widget tests
+#   unit-test-frontend:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.35.7"
+#       - name: Set up Flutter
+#         uses: subosito/flutter-action@v2
+#         with:
+#           flutter-version: "3.35.7"
 
-      - name: Run Frontend Tests
-        run: |
-          cd tests/test4-ci-pipeline/testing0/frontend0
-          flutter pub get
-          flutter test
+#       - name: Run Frontend Tests
+#         run: |
+#           cd tests/test4-ci-pipeline/testing0/frontend0
+#           flutter pub get
+#           flutter test
 
-  integration-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#   integration-tests:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
 
-      # - name: Install Docker Compose
-      #   run: |
-      #     sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-      #     sudo chmod +x /usr/local/bin/docker-compose
-      #     docker-compose --version
+#       # - name: Install Docker Compose
+#       #   run: |
+#       #     sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#       #     sudo chmod +x /usr/local/bin/docker-compose
+#       #     docker-compose --version
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.25"
+#       - name: Set up Go
+#         uses: actions/setup-go@v4
+#         with:
+#           go-version: "1.25"
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.35.7"
+#       - name: Set up Flutter
+#         uses: subosito/flutter-action@v2
+#         with:
+#           flutter-version: "3.35.7"
 
-      - name: Build Flutter web
-        run: |
-          cd tests/test4-ci-pipeline/testing1/docker3/frontend2
-          flutter pub get
-          flutter build web
+#       - name: Build Flutter web
+#         run: |
+#           cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+#           flutter pub get
+#           flutter build web
 
-      - name: Start services with docker-compose
-        run: |
-          cd tests/test4-ci-pipeline/testing1/docker3
-          docker compose up -d
+#       - name: Start services with docker-compose
+#         run: |
+#           cd tests/test4-ci-pipeline/testing1/docker3
+#           docker compose up -d
 
-      - name: Wait for backend to be ready
-        run: |
-          timeout 60 bash -c 'until curl -f http://localhost:8080/counter; do sleep 2; done'
+#       - name: Wait for backend to be ready
+#         run: |
+#           timeout 60 bash -c 'until curl -f http://localhost:8080/counter; do sleep 2; done'
 
-      - name: Run Backend Integration Tests
-        env:
-          DATABASE_URL: postgres://postgres:secret@localhost:5433/appdb?sslmode=disable
-        run: |
-          cd tests/test4-ci-pipeline/testing1/docker3/backend3
-          go test -v
+#       - name: Run Backend Integration Tests
+#         env:
+#           DATABASE_URL: postgres://postgres:secret@localhost:5433/appdb?sslmode=disable
+#         run: |
+#           cd tests/test4-ci-pipeline/testing1/docker3/backend3
+#           go test -v
 
-      - name: Run Frontend Integration Tests
-        run: |
-          cd tests/test4-ci-pipeline/testing1/docker3/frontend2
-          flutter pub get
-          flutter test test/api_integration_test.dart
+#       - name: Run Frontend Integration Tests
+#         run: |
+#           cd tests/test4-ci-pipeline/testing1/docker3/frontend2
+#           flutter pub get
+#           flutter test test/api_integration_test.dart
 
-      - name: Cleanup
-        if: always()
-        run: |
-          cd tests/test4-ci-pipeline/testing1/docker3
-          docker compose down
+#       - name: Cleanup
+#         if: always()
+#         run: |
+#           cd tests/test4-ci-pipeline/testing1/docker3
+#           docker compose down
